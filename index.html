@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gordão Marmitas | Atendimento & Vendas com IA</title>
+  <meta name="description" content="Restaurante de Marmitas Caseiras com assistente virtual com inteligência artificial para pedidos com personalização de temperos e ponto da carne.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍱</text></svg>">
+  
+  <!-- CSS Principal -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- NAVBAR REATIVA -->
+  <header class="navbar" id="topNavbar">
+    <div class="nav-container">
+      <div class="brand-wrapper" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+        <div class="brand-icon-box">🍱</div>
+        <div class="brand-text">
+          <h1>Gordão <span>Marmitas</span></h1>
+          <p>Comida caseira com fartura de verdade</p>
+        </div>
+      </div>
+
+      <ul class="nav-links">
+        <li><a href="#cardapio" class="nav-link active">Cardápio do Dia</a></li>
+        <li><a href="#bebidas" class="nav-link">Bebidas & Extras</a></li>
+        <li><a href="#chat" class="nav-link">Atendente Virtual IA</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <button class="btn-pill-cart" id="btnCartNav" title="Ver pedido atual">
+          <span>🛒 Pedido</span>
+          <span class="cart-badge" id="cartCountNav">0</span>
+        </button>
+        <button class="btn-settings" id="btnOpenSettings" title="Configurar IA (Gemini API / Modo Local)">
+          ⚙️
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO SECTION -->
+  <section class="hero-section">
+    <div class="hero-card">
+      <div class="hero-content">
+        <div class="hero-tag">🔥 Marmitaria Tradicional & Artesanal</div>
+        <h2 class="hero-title serif-title">Sabor caseiro, <span>porções generosas</span> e atendimento inteligente.</h2>
+        <p class="hero-subtitle">
+          Escolha seu prato do dia, personalize seus temperos, retire cebolas ou escolha o ponto exato da carne conversando diretamente com o <strong>Gordão Bot</strong>!
+        </p>
+        <div class="hero-badges-row">
+          <div class="hero-badge-pill">🛵 Entrega Rápida: R$ 6,00</div>
+          <div class="hero-badge-pill">✨ Grátis a partir de R$ 70</div>
+          <div class="hero-badge-pill">🛡️ Guardrails Anti-Injection Ativos</div>
+        </div>
+      </div>
+      <div class="hero-image-wrap">
+        <img src="assets/images/hero.jpg" alt="Marmitex caseiro suculento do Gordão Marmitas">
+        <div class="hero-img-overlay"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTEÚDO PRINCIPAL: CARDÁPIO (ESQ) + CHATBOT (DIR) -->
+  <main class="main-layout" id="cardapio">
+    
+    <!-- COLUNA DA ESQUERDA: CARDÁPIO REATIVO -->
+    <section class="menu-container">
+      <div class="section-header">
+        <h2>📅 Cardápio da Semana</h2>
+        <span style="font-size: 0.85rem; color: var(--text-muted);">Clique no dia para alternar</span>
+      </div>
+
+      <!-- Abas dos Dias da Semana -->
+      <div class="day-tabs" id="dayTabs">
+        <!-- Gerado via JavaScript -->
+      </div>
+
+      <!-- Tema e Informações do Dia Selecionado -->
+      <div class="day-theme-banner" id="dayThemeBanner">
+        <!-- Preenchido via JavaScript -->
+      </div>
+
+      <!-- Lista de Pratos do Dia -->
+      <div class="items-grid" id="menuItemsContainer">
+        <!-- Cards dos pratos gerados via JavaScript -->
+      </div>
+
+      <!-- Bebidas & Extras -->
+      <div class="extras-section" id="bebidas">
+        <div class="section-header">
+          <h3>🥤 Bebidas, Acompanhamentos & Sobremesas</h3>
+          <span style="font-size: 0.82rem; color: var(--text-light);">Disponíveis todos os dias</span>
+        </div>
+        <div class="extras-grid" id="extrasContainer">
+          <!-- Extras gerados via JavaScript -->
+        </div>
+      </div>
+    </section>
+
+    <!-- COLUNA DA DIREITA: CHATBOT AGENTE LLM -->
+    <aside class="chat-panel" id="chat">
+      <div class="chat-header">
+        <div class="agent-profile">
+          <div class="agent-avatar">
+            👨‍🍳
+            <span class="status-dot"></span>
+          </div>
+          <div class="agent-info">
+            <h3>Gordão Bot <span class="agent-badge-model">LLM Agent</span></h3>
+            <p>Atendente Virtual de Vendas</p>
+          </div>
+        </div>
+        <div class="chat-header-actions">
+          <button class="btn-header-action" id="btnClearChat" title="Reiniciar conversa">
+            🔄 Reiniciar
+          </button>
+        </div>
+      </div>
+
+      <!-- Barra de Status do Guardrail -->
+      <div class="guardrail-status-bar">
+        <span>🛡️ <strong>Guardrails:</strong> XSS, Prompt Injection & Jailbreak Ativos</span>
+        <button class="btn-test-jailbreak" id="btnTestJailbreak" title="Testar se o Guardrail bloqueia tentativa de ataque">
+          ⚡ Testar Jailbreak
+        </button>
+      </div>
+
+      <!-- Histórico de Mensagens do Chat -->
+      <div class="chat-messages" id="chatMessages">
+        <!-- Balões de mensagem inseridos aqui -->
+      </div>
+
+      <!-- Pílulas de Atalho / Prompts Rápidos -->
+      <div class="quick-prompts-bar">
+        <button class="quick-pill" data-prompt="Quais são as marmitas disponíveis hoje?">Cardápio de hoje?</button>
+        <button class="quick-pill" data-prompt="Quero uma marmita de bife acebolado sem cebola e bem passado">Bife sem cebola</button>
+        <button class="quick-pill" data-prompt="Qual o valor total do pedido com a entrega?">Ver total com entrega</button>
+        <button class="quick-pill" data-prompt="O que tem no cardápio de quarta-feira?">Cardápio de quarta?</button>
+      </div>
+
+      <!-- Resumo Rápido do Pedido Atual -->
+      <div class="chat-order-summary">
+        <div class="summary-text">
+          Subtotal: <span id="summarySubtotal">R$ 0,00</span> | Entrega: <span id="summaryDelivery">R$ 6,00</span>
+        </div>
+        <div class="summary-text">
+          <strong>Total: <span id="summaryTotal">R$ 0,00</span></strong>
+        </div>
+      </div>
+
+      <!-- Formulário de Entrada do Chat -->
+      <div class="chat-input-area">
+        <form class="input-form" id="chatForm">
+          <input 
+            type="text" 
+            id="chatInput" 
+            class="chat-input" 
+            placeholder="Digite seu pedido (ex: bife sem cebola bem passado)..." 
+            autocomplete="off"
+            required
+          >
+          <button type="submit" class="btn-send" id="btnSendMessage" title="Enviar mensagem">
+            ➤
+          </button>
+        </form>
+      </div>
+    </aside>
+
+  </main>
+
+  <!-- MODAL DE PERSONALIZAÇÃO RÁPIDA -->
+  <div class="modal-overlay" id="customModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="modalItemTitle">Personalizar Marmita</h3>
+        <button class="modal-close" id="btnCloseModal">&times;</button>
+      </div>
+      <p style="font-size: 0.88rem; margin-bottom: 16px;">
+        Selecione as opções de tempero, ponto e preparo que deseja enviar para a cozinha do Gordão:
+      </p>
+      <div id="modalCustomOptions">
+        <!-- Gerado via JS -->
+      </div>
+      <div style="margin-top: 20px; display: flex; gap: 10px;">
+        <button class="btn-order-chat" id="btnConfirmCustom" style="width: 100%;">
+          Confirmar e Enviar ao Chatbot
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE CONFIGURAÇÃO DE IA (CLIENT-SIDE) -->
+  <div class="modal-overlay" id="settingsModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>⚙️ Configurações da IA & Guardrails</h3>
+        <button class="modal-close" id="btnCloseSettings">&times;</button>
+      </div>
+      
+      <p style="font-size: 0.85rem; margin-bottom: 16px; color: var(--text-muted);">
+        Esta aplicação é <strong>100% Client-Side</strong> (executada inteiramente no seu navegador, sem servidor backend).
+      </p>
+
+      <div class="config-group">
+        <label for="apiKeyInput">Chave da Google Gemini API (Opcional - BYOK):</label>
+        <input type="password" id="apiKeyInput" placeholder="AIzaSy...">
+        <small style="display:block; margin-top: 4px; color: var(--text-light); font-size: 0.78rem;">
+          Se não informar chave, o sistema usa o <strong>Motor de IA Local / NLP Estruturado</strong> integrado, funcionando 100% offline e sem custos.
+        </small>
+      </div>
+
+      <div id="apiKeyStatus" style="font-size: 0.85rem; margin-bottom: 18px;"></div>
+
+      <div style="display: flex; gap: 10px; justify-content: flex-end;">
+        <button class="btn-quick-custom" id="btnClearApiKey">Remover Chave</button>
+        <button class="btn-order-chat" id="btnSaveApiKey" style="flex: 0 0 auto; padding: 10px 20px;">Salvar Chave</button>
+      </div>
+
+      <hr style="margin: 20px 0; border: none; border-top: 1px solid var(--border-warm);">
+
+      <div style="font-size: 0.82rem; color: var(--text-muted);">
+        <strong>🛡️ Guardrails Ativos:</strong>
+        <ul style="padding-left: 20px; margin-top: 6px;">
+          <li>Prevenção de Jailbreak (DAN, Bypass, Developer Mode)</li>
+          <li>Filtro contra Prompt Injection e vazamento de System Prompt</li>
+          <li>Sanitização XSS e limite de buffer de caracteres</li>
+          <li>Restrição estrita ao domínio gastronômico de marmitas</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- RODAPÉ -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <h2>🍱 Gordão Marmitas</h2>
+          <p style="color: #9B897D; font-size: 0.88rem;">O melhor sabor caseiro da região direto na sua mesa.</p>
+        </div>
+        <div>
+          <span style="font-size: 0.85rem; color: #D3C4B8;">⏰ Horário de Funcionamento: Seg a Sáb, das 10h30 às 15h00</span>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Gordão Marmitas. Aplicação Web Client-Side com Agente Inteligente & Guardrails.</p>
+        <p>Desenvolvido com foco em alta performance, acessibilidade e segurança.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts da Aplicação (Ordem de Dependência) -->
+  <script src="js/data.js"></script>
+  <script src="js/guardrails.js"></script>
+  <script src="js/agent.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
