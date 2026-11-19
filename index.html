@@ -34,8 +34,8 @@
           <span>🛒 Pedido</span>
           <span class="cart-badge" id="cartCountNav">0</span>
         </button>
-        <button class="btn-settings" id="btnOpenSettings" title="Configurar IA (Gemini API / Modo Local)">
-          ⚙️
+        <button class="btn-settings" id="btnOpenSettings" title="Ver Guardrails & Segurança">
+          🛡️
         </button>
       </div>
     </div>
@@ -109,7 +109,7 @@
             <span class="status-dot"></span>
           </div>
           <div class="agent-info">
-            <h3>Gordão Bot <span class="agent-badge-model">LLM Agent</span></h3>
+            <h3>Gordão Bot <span class="agent-badge-model">Sem API Key</span></h3>
             <p>Atendente Virtual de Vendas</p>
           </div>
         </div>
@@ -192,43 +192,39 @@
     </div>
   </div>
 
-  <!-- MODAL DE CONFIGURAÇÃO DE IA (CLIENT-SIDE) -->
+  <!-- MODAL DE GUARDRAILS & SEGURANÇA -->
   <div class="modal-overlay" id="settingsModal">
     <div class="modal-box">
       <div class="modal-header">
-        <h3>⚙️ Configurações da IA & Guardrails</h3>
+        <h3>🛡️ Guardrails & Segurança do Atendente</h3>
         <button class="modal-close" id="btnCloseSettings">&times;</button>
       </div>
       
-      <p style="font-size: 0.85rem; margin-bottom: 16px; color: var(--text-muted);">
-        Esta aplicação é <strong>100% Client-Side</strong> (executada inteiramente no seu navegador, sem servidor backend).
+      <p style="font-size: 0.88rem; margin-bottom: 16px; color: var(--text-muted);">
+        O <strong>Gordão Bot</strong> opera de forma 100% autônoma, <strong>sem necessidade de chave de API externa nem custos de LLM</strong>.
       </p>
 
-      <div class="config-group">
-        <label for="apiKeyInput">Chave da Google Gemini API (Opcional - BYOK):</label>
-        <input type="password" id="apiKeyInput" placeholder="AIzaSy...">
-        <small style="display:block; margin-top: 4px; color: var(--text-light); font-size: 0.78rem;">
-          Se não informar chave, o sistema usa o <strong>Motor de IA Local / NLP Estruturado</strong> integrado, funcionando 100% offline e sem custos.
-        </small>
+      <div style="background: #ECFDF5; border: 1.5px solid #A7F3D0; border-radius: 8px; padding: 12px 16px; margin-bottom: 18px;">
+        <span style="color: #065F46; font-weight: 700; font-size: 0.9rem;">
+          ✅ Modo Seguro Ativo: 100% Local, Privado e Protegido
+        </span>
+        <p style="margin-top: 4px; font-size: 0.82rem; color: #047857;">
+          Zero envio de dados para servidores de terceiros. Seu pedido é processado instantaneamente no seu navegador com validação estrita de escopo gastronômico.
+        </p>
       </div>
 
-      <div id="apiKeyStatus" style="font-size: 0.85rem; margin-bottom: 18px;"></div>
-
-      <div style="display: flex; gap: 10px; justify-content: flex-end;">
-        <button class="btn-quick-custom" id="btnClearApiKey">Remover Chave</button>
-        <button class="btn-order-chat" id="btnSaveApiKey" style="flex: 0 0 auto; padding: 10px 20px;">Salvar Chave</button>
-      </div>
-
-      <hr style="margin: 20px 0; border: none; border-top: 1px solid var(--border-warm);">
-
-      <div style="font-size: 0.82rem; color: var(--text-muted);">
-        <strong>🛡️ Guardrails Ativos:</strong>
-        <ul style="padding-left: 20px; margin-top: 6px;">
-          <li>Prevenção de Jailbreak (DAN, Bypass, Developer Mode)</li>
-          <li>Filtro contra Prompt Injection e vazamento de System Prompt</li>
-          <li>Sanitização XSS e limite de buffer de caracteres</li>
-          <li>Restrição estrita ao domínio gastronômico de marmitas</li>
+      <div style="font-size: 0.84rem; color: var(--text-main);">
+        <strong>🛡️ Barreiras de Proteção (Guardrails Ativos):</strong>
+        <ul style="padding-left: 20px; margin-top: 8px; line-height: 1.6; color: var(--text-muted);">
+          <li><strong>Bloqueio de desvio de finalidade:</strong> Impede que o bot seja usado para programação, redação geral, conselhos não gastronômicos ou fins não relacionados ao restaurante.</li>
+          <li><strong>Defesa contra Prompt Injection & Jailbreak:</strong> Bloqueia tentativas como DAN, Developer Mode, substituição de persona ou comandos "ignore previous instructions".</li>
+          <li><strong>Filtro de Conteúdo Prejudicial e Tóxico:</strong> Bloqueia termos perigosos, armas, golpes, violência e conteúdo impróprio.</li>
+          <li><strong>Sanitização contra XSS e Buffer Overflow:</strong> Limpeza de tags HTML, scripts e contenção do tamanho da mensagem.</li>
         </ul>
+      </div>
+
+      <div style="margin-top: 20px; display: flex; justify-content: flex-end;">
+        <button class="btn-order-chat" id="btnCloseSettingsAction" style="padding: 10px 22px;">Entendido</button>
       </div>
     </div>
   </div>

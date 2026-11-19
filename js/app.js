@@ -28,10 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const settingsModal = document.getElementById('settingsModal');
   const btnOpenSettings = document.getElementById('btnOpenSettings');
   const btnCloseSettings = document.getElementById('btnCloseSettings');
-  const btnSaveApiKey = document.getElementById('btnSaveApiKey');
-  const apiKeyInput = document.getElementById('apiKeyInput');
-  const btnClearApiKey = document.getElementById('btnClearApiKey');
-  const apiKeyStatus = document.getElementById('apiKeyStatus');
+  const btnCloseSettingsAction = document.getElementById('btnCloseSettingsAction');
 
   const btnCartNav = document.getElementById('btnCartNav');
   const btnClearChat = document.getElementById('btnClearChat');
@@ -320,16 +317,8 @@ document.addEventListener('DOMContentLoaded', () => {
     summaryTotal.textContent = window.MarmitaAgent.formatMoney(total);
   }
 
-  // 6. Configurações da API Key do Gemini (BYOK client-side)
+  // 6. Modal de Guardrails e Segurança (100% Autônomo e Local)
   function initSettings() {
-    const savedKey = localStorage.getItem('gordao_gemini_api_key');
-    if (savedKey) {
-      apiKeyInput.value = savedKey;
-      apiKeyStatus.innerHTML = '<span style="color:#10B981; font-weight:700;">● Conectado à API do Google Gemini</span>';
-    } else {
-      apiKeyStatus.innerHTML = '<span style="color:#D97706; font-weight:700;">● Usando Motor de IA Local / Fallback Autônomo</span>';
-    }
-
     btnOpenSettings.addEventListener('click', () => {
       settingsModal.classList.add('open');
     });
@@ -338,22 +327,11 @@ document.addEventListener('DOMContentLoaded', () => {
       settingsModal.classList.remove('open');
     });
 
-    btnSaveApiKey.addEventListener('click', () => {
-      const val = apiKeyInput.value.trim();
-      if (val) {
-        localStorage.setItem('gordao_gemini_api_key', val);
-        apiKeyStatus.innerHTML = '<span style="color:#10B981; font-weight:700;">● Chave salva! Chamando Gemini 1.5</span>';
-        alert('Chave do Gemini salva com sucesso no seu navegador!');
-      }
-      settingsModal.classList.remove('open');
-    });
-
-    btnClearApiKey.addEventListener('click', () => {
-      localStorage.removeItem('gordao_gemini_api_key');
-      apiKeyInput.value = '';
-      apiKeyStatus.innerHTML = '<span style="color:#D97706; font-weight:700;">● Usando Motor de IA Local / Fallback Autônomo</span>';
-      alert('Chave removida. O assistente usará o motor inteligente local integrado!');
-    });
+    if (btnCloseSettingsAction) {
+      btnCloseSettingsAction.addEventListener('click', () => {
+        settingsModal.classList.remove('open');
+      });
+    }
 
     btnClearChat.addEventListener('click', () => {
       if (confirm('Deseja limpar a conversa e reiniciar o pedido?')) {

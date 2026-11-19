@@ -27,15 +27,16 @@ Aplicação web interativa, responsiva e desenvolvida 100% no padrão **Client-S
    - Discriminação transparente no chat e no painel lateral.
 
 6. **Camada Robusta de Guardrails de Segurança (Client-Side):**
+   - **Prevenção de Desvio de Finalidade:** Bloqueia pedidos para escrever código, resolver cálculos ou equações, escrever redações ou debater temas alheios ao restaurante.
    - **Prevenção de Jailbreak e Prompt Injection:** Filtro de comandos maliciosos conhecidos (`ignore previous instructions`, `DAN`, `developer mode`, `bypass safety`, etc.).
-   - **Anti-Vazamento:** Impede a revelação do system prompt e credenciais.
+   - **Anti-Vazamento:** Impede a revelação de instruções internas do assistente.
    - **Sanitização contra XSS:** Tratamento seguro de strings e escaping de tags HTML.
-   - **Restrição de Domínio:** Bloqueio de assuntos perigosos ou fora do escopo do restaurante.
+   - **Restrição de Domínio:** Bloqueio de assuntos perigosos, tóxicos ou fora do escopo gastronômico.
    - Inclui botão interativo de **"Testar Jailbreak"** no cabeçalho do chatbot para validação em tempo real.
 
-7. **Arquitetura 100% Client-Side e Híbrida de IA:**
-   - **Motor Local de IA / NLP Integrado:** Funciona imediatamente de forma autônoma, sem necessidade de chaves ou conexão externa.
-   - **Suporte Opcional a LLM Externa (BYOK):** Campo nas configurações para inserir chave da API Google Gemini 1.5 caso deseje geração conversacional ilimitada no navegador via client-side fetch.
+7. **Arquitetura 100% Autônoma sem Chave de API:**
+   - **Zero API Key / Zero Custo:** O assistente utiliza motor local de processamento de linguagem natural focado nas vendas de marmitas, cálculo de entregas e customizações de prato.
+   - **Zero dependência de servidores ou LLM externa:** Não há risco de indisponibilidade por esgotamento de quota de API ou vazamento de chaves.
 
 8. **Design Acolhedor & Reativo:**
    - Paleta rica em cores quentes (Terracota `#EB5720`, Âmbar, Caramelo e Creme Acolhedor `#FAF6F0`).

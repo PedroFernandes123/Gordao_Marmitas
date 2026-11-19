@@ -1,6 +1,6 @@
-// Agente de IA Conversacional do Gordão Marmitas
-// Suporta execução direta com API externa (ex: Google Gemini via chave client-side opcional salva no localStorage)
-// E fallback completo com LLM Simulada/Local baseada em NLP & Intenções estruturadas para funcionar 100% offline/out-of-the-box!
+// Atendente Virtual Inteligente do Gordão Marmitas
+// Opera 100% local no cliente, sem requisições a APIs externas ou chaves de LLM (Zero API Key)
+// Equipado com Guardrails de segurança contra desvio de finalidade, injeção de prompt e jailbreak
 
 window.MarmitaAgent = (function() {
   // Estado da conversa e pedido em andamento
@@ -95,95 +95,28 @@ REGRAS DE SEGURANÇA E GUARDRAILS:
   }
 
   /**
-   * Processador de Linguagem Natural / IA Híbrida:
-   * Se houver API Key cadastrada no localStorage ('gemini_api_key'), tenta chamar a Gemini API.
-   * Se não houver ou falhar, processa com o motor semântico local especializado.
+   * Processador de Linguagem Natural Especializado e Autônomo (Sem chave de API / Sem chamadas externas)
+   * 1. Submete o input aos Guardrails para barrar desvios de finalidade, injeção de prompt e jailbreak
+   * 2. Processa as intenções gastronômicas (pedidos, personalizações de ponto/temperos, valores e entrega)
    */
   async function processMessage(userMessage, chatHistory = []) {
-    // 1. Guardrails check primeiro
+    // 1. Guardrails check primeiro (bloqueia desvios de finalidade e tentativas maliciosas)
     const guardrailResult = window.Guardrails.checkInput(userMessage);
     if (!guardrailResult.isValid) {
       return {
         reply: guardrailResult.safeResponse,
         orderUpdated: false,
         flagged: true,
-        attackType: guardrailResult.attackType
+        attackType: guardrailResult.attackType,
+        provider: "Guardrail de Segurança"
       };
     }
 
     const cleanText = guardrailResult.sanitized;
-    const apiKey = localStorage.getItem('gordao_gemini_api_key');
 
-    // Se usuário configurou chave do Google Gemini (gratuita / BYOK), usamos IA generativa completa
-    if (apiKey && apiKey.trim().length > 10) {
-      try {
-        const geminiReply = await callGeminiAPI(apiKey.trim(), cleanText, chatHistory);
-        if (geminiReply) {
-          // Analisa se o pedido precisa ser atualizado localmente com base na mensagem
-          analyzeAndSyncOrderFromText(cleanText);
-          const validated = window.Guardrails.validateOutput(geminiReply);
-          return {
-            reply: validated,
-            orderUpdated: true,
-            provider: "Gemini AI"
-          };
-        }
-      } catch (err) {
-        console.warn("Falha ao chamar Gemini API, usando motor de fallback local:", err);
-      }
-    }
-
-    // Fallback: Motor local inteligente (Zero Server, Zero Dependências externas)
+    // Motor local estruturado: 100% autônomo, sem custos de API, sem dependência de chaves
     const localResult = processLocalEngine(cleanText);
     return localResult;
-  }
-
-  /**
-   * Chamada à API Google Gemini via client-side fetch puro
-   */
-  async function callGeminiAPI(key, text, history) {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`;
-    const sysPrompt = buildSystemPrompt();
-
-    // Monta histórico de mensagens
-    const contents = [
-      { role: "user", parts: [{ text: "Contexto inicial de instrução:\n" + sysPrompt }] },
-      { role: "model", parts: [{ text: "Entendido perfeitamente! Sou o Gordão Bot, pronto para atender os clientes com muita simpatia e foco nas nossas marmitas." }] }
-    ];
-
-    // Adiciona últimas mensagens do histórico (até 8 para não exceder limites)
-    const recent = history.slice(-8);
-    for (const msg of recent) {
-      contents.push({
-        role: msg.sender === 'user' ? 'user' : 'model',
-        parts: [{ text: msg.text }]
-      });
-    }
-
-    contents.push({
-      role: "user",
-      parts: [{ text }]
-    });
-
-    const response = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: contents,
-        generationConfig: {
-          temperature: 0.6,
-          maxOutputTokens: 600
-        }
-      })
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error?.message || "Erro na API Gemini");
-    }
-
-    const data = await response.json();
-    return data.candidates?.[0]?.content?.parts?.[0]?.text;
   }
 
   /**
@@ -206,9 +139,9 @@ REGRAS DE SEGURANÇA E GUARDRAILS:
     const isGreeting = /^(oi|ol[aá]|bom dia|boa tarde|boa noite|opa|fala|ei)\b/i.test(lower);
     
     // Detectar solicitação de cardápio
-    const asksMenu = /(card[aá]pio|menu|quais s[aã]o as marmitas|op[cç][oõ]es|o que tem|o que tem hoje|pratos|o que servem)/i.test(lower);
+    const asksMenu = /(card[aá]pio|menu|quais s[aã]o as marmitas|quais as marmitas|op[cç][oõ]es|o que tem|o que tem hoje|pratos|o que servem)/i.test(lower);
 
-    // Detectar menção a dias específicos
+    // Detectar menção a dias específicos com pedido de cardápio
     const mentionedDay = detectDayInText(lower);
     if (mentionedDay && (asksMenu || lower.includes("de") || lower.includes("em"))) {
       orderState.day = mentionedDay;
@@ -217,6 +150,16 @@ REGRAS DE SEGURANÇA E GUARDRAILS:
         dayData.items.map(item => `🍱 **${item.name}** - ${formatMoney(item.price)}\n   _${item.description}_\n   *Opções:* ${item.customizable.join(', ')}`).join('\n\n') +
         `\n\n🛵 **Taxa de Entrega:** ${formatMoney(data.deliveryFee)} (Grátis acima de ${formatMoney(data.freeDeliveryThreshold)}).\n` +
         `👉 Para pedir, me diga qual marmita você deseja e como quer seu tempero ou ponto da carne!`;
+      return { reply, orderUpdated: false, provider: "Agente Local" };
+    }
+
+    // Se perguntou sobre cardápio geral/de hoje
+    if (asksMenu) {
+      const dayData = data.days[orderState.day];
+      reply = `🍽️ **Cardápio de Hoje (${dayData.label}) no Gordão Marmitas:**\n\n` +
+        dayData.items.map(item => `• **${item.name}** - ${formatMoney(item.price)}\n  _${item.description}_\n  *(Pode pedir sem cebola, mudar ponto da carne, etc!)*`).join('\n\n') +
+        `\n\n🛵 **Taxa de Entrega:** ${formatMoney(data.deliveryFee)}\n` +
+        `👉 Qual você deseja saborear hoje?`;
       return { reply, orderUpdated: false, provider: "Agente Local" };
     }
 

@@ -1,6 +1,6 @@
 // Sistema de Guardrails contra Prompt Injection, Jailbreak, Vazamento de Instruções e Manipulação
 window.Guardrails = (function() {
-  // Padrões de jailbreak comuns conhecidos
+  // Padrões de jailbreak comuns conhecidos e tentativas de manipulação
   const JAILBREAK_PATTERNS = [
     /ignore\s+(all\s+)?(previous|prior|above)\s+(instructions|prompts|rules)/i,
     /disregard\s+(all\s+)?(previous|prior|rules)/i,
@@ -9,6 +9,7 @@ window.Guardrails = (function() {
     /jailbreak/i,
     /system\s+prompt/i,
     /esquecer\s+(todas\s+as\s+)?(instru[cç][oõ]es|regras)/i,
+    /esque[cç]a\s+(todas\s+as\s+)?(instru[cç][oõ]es|regras)/i,
     /repita\s+(o\s+)?prompt/i,
     /mostrar\s+(o\s+)?prompt/i,
     /revele\s+(o\s+)?prompt/i,
@@ -27,10 +28,23 @@ window.Guardrails = (function() {
     /eval\s*\(/i
   ];
 
-  // Palavras-chave fora de escopo (temas perigosos ou inapropriados para venda de marmitas)
-  const OUT_OF_SCOPE_SUSPICIOUS = [
+  // Padrões de desvio de finalidade (tentativas de usar o chatbot para tarefas não relacionadas a marmitas/restaurante)
+  const OUT_OF_DOMAIN_PATTERNS = [
+    // Código e programação
+    /\b(crie|fa[cç]a|escreva|gerar?)\s+(um\s+)?(c[oó]digo|script|software|programa|fun[cç][aã]o|algoritmo|sql|python|javascript|php|java|c\+\+|html|css)\b/i,
+    /\b(escreva\s+um\s+poema|fa[cç]a\s+uma\s+poesia|escreva\s+uma\s+reda[cç][aã]o|escreva\s+um\s+artigo|resuma\s+um\s+texto)\b/i,
+    // Perguntas acadêmicas / lição de casa / matemática geral não relacionada a pedido
+    /\b(quanto\s+[eé]\s+\d+\s*[\+\-\*\/]|resolva\s+a\s+equa[cç][aã]o|raiz\s+quadrada|f[oó]rmula\s+de\s+bhaskara)\b/i,
+    // Opiniões políticas / debates / apostas
+    /\b(elei[cç][oõ]es|pol[ií]tica|presidente|partido\s+pol[ií]tico|aposta|bet|cassino)\b/i,
+    // Outros temas alheios
+    /\b(como\s+fazer\s+uma\s+bomba|como\s+invadir|como\s+hackear|gerar\s+cpf|gerar\s+cart[aã]o)\b/i
+  ];
+
+  // Palavras-chave perigosas ou impróprias
+  const HARMFUL_CONTENT_PATTERNS = [
     /\b(arma|bomba|explosivo|veneno|droga|cartão clonado|cpf falso|roubo|assalto)\b/i,
-    /\b(kill|suicide|morte|assassinar|atentado)\b/i
+    /\b(kill|suicide|morte|assassinar|atentado|suic[ií]dio)\b/i
   ];
 
   /**
@@ -75,14 +89,27 @@ window.Guardrails = (function() {
       }
     }
 
-    // 2. Verificação de conteúdo fora de escopo perigoso
-    for (const pattern of OUT_OF_SCOPE_SUSPICIOUS) {
+    // 2. Verificação de desvio de finalidade (uso indevido para outros fins alheios ao restaurante)
+    for (const pattern of OUT_OF_DOMAIN_PATTERNS) {
       if (pattern.test(trimmed)) {
         return {
           isValid: false,
-          attackType: "HARMFUL_CONTENT",
+          attackType: "DESVIO_DE_FINALIDADE",
+          reason: "Tentativa de uso do assistente para outros fins não relacionados ao cardápio ou pedidos do restaurante.",
+          safeResponse: "🛡️ [Guardrail - Desvio de Finalidade] Sou o atendente virtual exclusivo do **Gordão Marmitas**. Meu sistema não pode ser utilizado para programação, redação geral, estudos ou outros fins fora do atendimento do restaurante. Que tal conferir as marmitas suculentas do cardápio de hoje?",
+          sanitized: sanitizeInput(trimmed)
+        };
+      }
+    }
+
+    // 3. Verificação de conteúdo perigoso ou impróprio
+    for (const pattern of HARMFUL_CONTENT_PATTERNS) {
+      if (pattern.test(trimmed)) {
+        return {
+          isValid: false,
+          attackType: "CONTEUDO_IMPROPRIO",
           reason: "Conteúdo potencialmente perigoso ou impróprio para um assistente de marmitas.",
-          safeResponse: "🛡️ [Segurança Ativada] Este assunto não condiz com os serviços do **Gordão Marmitas**. Trabalhamos com comida caseira de qualidade. Se desejar saber sobre nossos pratos e marmitas de hoje, terei prazer em ajudar!",
+          safeResponse: "🛡️ [Guardrail - Conteúdo Impróprio] Este assunto não condiz com os serviços do **Gordão Marmitas**. Nosso foco é exclusivamente servir refeições caseiras saborosas e bem temperadas. Se quiser montar um pedido, estou às ordens!",
           sanitized: sanitizeInput(trimmed)
         };
       }
